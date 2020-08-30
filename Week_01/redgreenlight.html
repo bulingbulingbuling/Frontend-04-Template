@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>redGreenLight</title>
+  <style>
+    ul {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50, -50);
+    }
+
+    ul>li {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      opacity: .1;
+      display: inline-block;
+    }
+
+    ul.red>#red,
+    ul.green>#green,
+    ul.yellow>#yellow {
+      opacity: 1;
+    }
+
+    #red {
+      background: red
+    }
+
+    #yellow {
+      background: yellow
+    }
+
+    #green {
+      background: green
+    }
+  </style>
+</head>
+
+<body>
+  <ul id="main">
+    <li id="green"></li>
+    <li id="yellow"></li>
+    <li id="red"></li>
+  </ul>
+</body>
+<script>
+  function timeOut(timer) {
+    return function () {
+      return new Promise(function (resolve, reject) {
+        setTimeout(resolve, timer)
+      })
+    }
+  }
+  var green = timeOut(5000);
+  var yellow = timeOut(2000);
+  var red = timeOut(3000);
+  var main = document.getElementById("main");
+  (function restart() {
+    'use strict'
+    main.className = 'green';
+    green().then(function () {
+        main.className = 'yellow';
+        return yellow();
+      })
+      .then(function () {
+        main.className = "red";
+        return red();
+      })
+      .then(function () {
+        restart()
+      })
+  })()
+</script>
+
+</html>
