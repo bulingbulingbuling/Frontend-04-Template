@@ -54,23 +54,37 @@
       setTimeout(resolve, t)
     })
   }
-
-  function happen(element, eventName) {
-    return new Promise((resolve, reject) => {
-      element.addEventListener(eventName, resolve, {
-        once: true
-      })
-    })
-  }
-  async function go() {
+  // generator模拟async函数 函数后跟*表示generator函数
+  function* go() {
     while (true) {
       green()
-      await happen(document.getElementById("next"), "click");
+      yield happen(5000);
       yellow()
-      await happen(document.getElementById("next"), "click");
+      yield happen(2000);
       red()
-      await happen(document.getElementById("next"), "click");
+      yield happen(5000);
     }
   }
-  go()
+
+  function run(iterator) {
+    let {
+      value,
+      done
+    } = iterator.next();
+    if (done) {
+      return
+    }
+    if (value instanceof Promise) {
+      value.then(() => {
+        run(iterator)
+      })
+    }
+  }
+
+  function co(generator) {
+    return function () {
+      return run(generator())
+    }
+  }
+  go = co(go)
 </script>
