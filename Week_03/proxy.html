@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>class</title>
+</head>
+
+<body>
+  <script>
+    const handler = {
+      get: function (obj, prop) {
+        return prop in obj ? obj[prop] : 37
+      }
+    }
+    // Proxy对象用于定义基本操作的自定义行为(属性查找 赋值 枚举 函数调用)
+    //语法：const p = new Proxy(target, handler)
+    // 参数： target 要使用proxy包装的目标对象(任何类型的对象，原生数组，函数，另一个代理)
+    // 参数：handler 一个通常以函数作为属性的对象，各属性中的函数分别定义了在执行各种操作时代理p的行为
+    const p = new Proxy({}, handler);
+    p.a = 1;
+    p.b = undefined;
+    console.log(p.a, p.b);//1 undefined
+    console.log('c' in p, p.c);//false 37
+    // 无操作转发代理 代理将所有应用到它的操作转发到原生 JavaScript 对象上。
+    let target = [];
+    let pp = new Proxy(target, {});
+    pp.a = 37;
+    console.log(target.a);//37
+    //验证属性
+    let validator = {
+      set: function (obj, prop, value) {
+        if (prop === "age") {
+          //判断value是否为整数
+          if (!Number.isInteger(value)) {
+            throw new TypeError("value must be an integer");
+          }
+          if (value > 200) {
+            throw new TypeError("the age seems invalid");
+          }
+        }
+        obj[prop] = value;
+        return true
+      }
+    }
+    let person = new Proxy({}, validator);
+    person.age = 100;
+    console.log(person.age);//100
+    //person.age = "young";//value must be an integer
+    //person.age = 250;//the age seems invalid
+
+    //方法代理可以轻松地通过一个新构造函数来扩展一个已有的构造函数
+    function extend(sup, base) {
+      var descriptor = Object.getOwnPropertyDescriptor(
+        base.prototype, "constructor"
+      )
+      base.prototype = Object.create(super.prototype);
+      var handler = {
+        constructor: function (target, args) {
+          var obj = Object.create(base.prototype);
+          this.apply(target, obj, args);
+          return obj;
+        },
+        apply: function (target, obj, args) {
+          sup.apply(obj, args);
+          base.apply(obj, args)
+        }
+      };
+      var proxy = new Proxy(base, handler);
+      descriptor.value = proxy;
+      Object.defineProperty(base.prototype, "constructor", descriptor);
+      return proxy;
+    }
+    var Person = function (name, age) {
+      this.name = name;
+    };
+    var Boy = extend(Person, function (name, age) {
+      this.age = age;
+    });
+    Boy.prototype.sex = "M";
+    var Peter = new Boy("Peter", 13);
+    console.log(Peter.sex);
+    console.log(Peter.name);
+    console.log(Peter.age);
+
+  </script>
+</body>
+
+</html>

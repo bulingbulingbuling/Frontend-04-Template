@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wildcard</title>
+</head>
+
+<body>
+  <script>
+    function find(source, pattern) {
+      let starCount = 0;
+      // 找到多少星号
+      for (let i = 0; i < pattern.length; i++) {
+        if (pattern[i] === "*") {
+          starCount++
+        }
+      }
+      //边缘 没有*
+      if (starCount === 0) {
+        for (let i = 0; i < pattern.length; i++) {
+          if (pattern[i] !== source[i] && pattern[i] !== "?") {
+            return false
+          }
+        }
+        return
+      }
+      // 处理* i代表pattern位置 lastIndex原字符串位置
+      let i = 0,
+        lastIndex = 0;
+      // 第一个*之前的匹配完
+      for (i = 0; pattern[i] !== "*"; i++) {
+        if (pattern[i] !== source[i] && pattern[i] !== "?") {
+          return false
+        }
+      }
+      // 第一次 原字符串位置移到第一个*号
+      lastIndex = i;
+      for (p = 0; p < starCount - 1; p++) {
+        i++;
+        let subPattern = "";
+        while (pattern[i] !== "*") {
+          subPattern += pattern[i];
+          i++
+        }
+        // subPattern里的？转换成正则 匹配任意字符的正则
+        let reg = new RegExp(subPattern.replace(/\?/g, "[\\s\\S]"), "g");
+        // lastIndex 是正则下一次匹配的起始位置
+        reg.lastIndex = lastIndex;
+        console.log(reg.exec(source));
+        if (!reg.exec(source)) return false;
+        lastIndex = reg.lastIndex;
+        // 尾部匹配
+        for (var j = 0; j <= pattern.length - lastIndex && pattern[pattern.length - j] !== "*"; j++) {
+          if (pattern[pattern.length - j] !== source[source.length - j] && pattern[pattern.length - j] !== "?") {
+            return false;
+          }
+        }
+      }
+      return true;
+
+    }
+    // find("abcabcabxaac","a*b*bx*c")
+    // find("abcabcabxaac","a*b?*bx*c")
+    // find("abcabcabxaac","a*b?*b?x*c")
+  </script>
+</body>
+
+</html>
