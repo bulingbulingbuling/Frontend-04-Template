@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>百分布局和自适应宽布局传统的</title>
+  <style>
+    /* 等分布局 */
+    .outer {
+      width: 101px;
+      /* 像素计算精度问题，还是会出现换行，我们给 outer 添加一个特定宽度： */
+      font-size: 0;
+      margin-right: -5px;
+      /* 某些旧版本浏览器中会出现换行。加上一个负的右 margin */
+    }
+
+    .inner {
+      width: 33.33%;
+      height: 200px;
+      display: inline-block;
+      font-size: 14px;
+      outline: 1px solid black;
+    }
+
+    /* 自适应宽 */
+    .outer1 {
+      height: 300px;
+      outline: 1px solid red;
+    }
+
+    .fixed {
+      width: 200px;
+      height: 300px;
+      display: inline-block;
+      outline: 1px solid green;
+    }
+
+    .auto {
+      margin-left: -206px;
+      padding-left: 200px;
+      box-sizing: border-box;
+      width: 100%;
+      height: 300px;
+      display: inline-block;
+      vertical-align: top;
+      outline: 1px solid blue;
+    }
+
+    /* color */
+    #grad1 {
+      height: 20px;
+      width: 50px;
+      background: linear-gradient(45deg, gold 10%, yellow 50%, gold 90%);
+    }
+
+
+    .button {
+      display: inline-block;
+      outline: none;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      font: 14px/100% Arial, Helvetica, sans-serif;
+      padding: .5em 2em .55em;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+      border-radius: .5em;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
+      color: white;
+      border: solid 1px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <ul class="outer">
+    <li class="inner"></li>
+    <li class="inner"></li>
+    <li class="inner"></li>
+  </ul>
+
+  <div class="outer1">
+    <div class="fixed"></div>
+    <div class="auto"></div>
+  </div>
+
+
+  <div id="grad1"></div>
+
+  <div class="button orange">123</div>
+
+
+  <script>
+    var btn = document.querySelector(".button");
+    var h = 25;
+    setInterval(function () {
+      h++;
+      h = h % 360;
+      btn.style.borderColor = `hsl(${h}, 95%, 45%)`
+      btn.style.background = `linear-gradient(to bottom,  hsl(${h},95%,54.1%),  hsl(${h},95%,84.1%))`
+    }, 100);
+
+
+
+
+    var iframe = document.createElement("iframe");
+
+    document.body.appendChild(iframe);
+
+    iframe.src = "https://www.w3.org/TR/2019/WD-css-lists-3-20190425/"
+
+    function happen(element, type) {
+      return new Promise(resolve => {
+        element.addEventListener(type, resolve, {
+          once: true
+        })
+      })
+    }
+
+    happen(iframe, "load").then(function () {
+      //Array.prototype.map.call(document.querySelectorAll("#container li[data-tag~=css] h2"), e=> e.children[0].href + " |\t" + e.children[0].textContent).join("\n")
+      console.log(iframe.contentWindow);
+    })
+    async function start() {
+      var output = []
+      for (let standard of Array.prototype.slice.call(document.querySelectorAll(
+          "#container li[data-tag~=css] h2:not(.Retired):not(.GroupNote)"))) {
+        console.log(standard.children[0].href);
+        iframe.src = standard.children[0].href;
+        await happen(iframe, "load");
+        var properties = Array.prototype.map.call(iframe.contentWindow.document.querySelectorAll(
+          ".propdef [data-dfn-type=property]"), e => e.childNodes[0].textContent);
+        if (properties.length)
+          output.push(standard.children[0].textContent + " | " + properties.join(", "));
+      }
+      console.log(output.join("\n"))
+    }
+    start();
+  </script>
+</body>
+
+</html>
