@@ -1,0 +1,68 @@
+<style>
+  @keyframes mykf {
+    from {
+      background: red;
+    }
+
+    to {
+      background: green;
+    }
+  }
+
+  @keyframes transitionAndAnimation {
+    0% {
+      top: 0;
+      transition: top ease;
+    }
+
+    50% {
+      top: 30px;
+      transition: top ease-in;
+    }
+
+    75% {
+      top: 10px;
+      transition: top ease-out;
+    }
+
+    100% {
+      top: 0;
+      transition: top linear;
+    }
+  }
+
+  div {
+    /* animation: transitionAndAnimation 5s infinite； */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    border-radius: .5em;
+    border: 1px solid;
+  }
+</style>
+<div style="width:100px;height:100px;position:fixed;">
+
+</div>
+<script>
+  // 拟合贝塞尔曲线 模拟抛物线
+  // function generatorCubicBezier(v,g,t){
+  //   var a = v/g;
+  //   var b = t + v/g;
+
+  //   return[
+  //     [( a / 3 + ( a + b ) / 3 - a ) / ( b - a ),
+  //      ( a * a / 3 + a * b * 2 / 3 - a * a ) / ( b * b - a * a)
+  //     ],[
+  //      ( b / 3 + ( a + b ) / 3 - a) / ( b - a), 
+  //      ( b * b / 3 + a * b * 2 / 3 - a * a) / ( b * b - a * a)
+  //     ]
+  //   ];
+  // }
+  var div = document.getElementsByTagName("div")[0];
+  var h = 25;
+
+  setInterval(function () {
+    h++;
+    h = h % 360;
+    div.style.borderColor = `hsl(${h}, 95%, 45%)`;
+    div.style.background = `linear-gradient(to bottom,hsl(${h},95%,54.1%),  hsl(${h},95%,84.1%)`;
+  }, 100)
+</script>
