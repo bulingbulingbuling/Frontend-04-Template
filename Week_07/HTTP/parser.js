@@ -1,5 +1,6 @@
 //引入css包
 const css = require("css");
+const css = require("./layout.js");
 
 //在html里不管tag多复杂 只当作一个token处理
 let currentToken = null;
@@ -218,7 +219,9 @@ function emit(token) {
         // top就是css标签 children[0]就是文本节点
         addCssRules(top.children[0].content);
       }
-
+      
+      //排版
+      layout(top)
       // 出栈
       stack.pop();
     }

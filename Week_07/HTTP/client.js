@@ -1,5 +1,7 @@
 const net = require("net");
 const parser = require("./parser.js");
+const parser = require("images");
+const render = require("./render.js");
 //解析response里的body
 class TrunkedBodyParser {
   constructor() {
@@ -228,4 +230,11 @@ void (async function () {
 
   console.log(JSON.stringify(dom, null, " "));
   console.log("");
+
+  let viewport = images(800, 600);
+
+  render(viewport, dom.children[0].children[3].children[1].children[3]);
+
+  viewport.save("viewport.jpg");
+
 })();
